@@ -71,12 +71,12 @@ function App() {
               path="/"
               element={
                 <div
-                  style={{
-                    textAlign: "center",
-                    marginTop: "100px",
-                    marginLeft: "40%",
-                    width: "400px",
-                  }}
+                // style={{
+                //   textAlign: "center",
+                //   marginTop: "100px",
+                //   marginLeft: "40%",
+                //   width: "400px",
+                // }}
                 >
                   <Login />
                 </div>
