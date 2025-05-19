@@ -46,7 +46,9 @@ const Admin = () => {
   };
 
   return (
-    <Box sx={{ p: { xs: 1, md: 3 } }}>
+    <Box
+      sx={{ p: { xs: 1, md: 6 }, background: "#f7fafd", minHeight: "100vh" }}
+    >
       {/* Welcome Banner */}
       <Paper
         elevation={2}
@@ -68,7 +70,14 @@ const Admin = () => {
       {/* Summary Cards */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={6} md={3}>
-          <Paper sx={{ p: 2, textAlign: "center", borderRadius: 2 }}>
+          <Paper
+            sx={{
+              p: 2,
+              textAlign: "center",
+              borderRadius: 2,
+              background: "linear-gradient(135deg, #f8fbff 0%, #e3f0ff 100%)",
+            }}
+          >
             <Typography variant="h6">Total Users</Typography>
             <Typography variant="h4" sx={{ color: "#1976d2", fontWeight: 700 }}>
               {users.length}
@@ -76,7 +85,14 @@ const Admin = () => {
           </Paper>
         </Grid>
         <Grid item xs={6} md={3}>
-          <Paper sx={{ p: 2, textAlign: "center", borderRadius: 2 }}>
+          <Paper
+            sx={{
+              p: 2,
+              textAlign: "center",
+              borderRadius: 2,
+              background: "linear-gradient(135deg, #fffbe7 0%, #fceabb 100%)",
+            }}
+          >
             <Typography variant="h6">Total Bikes</Typography>
             <Typography variant="h4" sx={{ color: "#1976d2", fontWeight: 700 }}>
               {bikes.length}
@@ -84,7 +100,14 @@ const Admin = () => {
           </Paper>
         </Grid>
         <Grid item xs={6} md={3}>
-          <Paper sx={{ p: 2, textAlign: "center", borderRadius: 2 }}>
+          <Paper
+            sx={{
+              p: 2,
+              textAlign: "center",
+              borderRadius: 2,
+              background: "linear-gradient(135deg, #f8fffa 0%, #e0f7fa 100%)",
+            }}
+          >
             <Typography variant="h6">Avg. Bike Rating</Typography>
             <Typography variant="h4" sx={{ color: "#1976d2", fontWeight: 700 }}>
               {avgRating}
@@ -92,7 +115,14 @@ const Admin = () => {
           </Paper>
         </Grid>
         <Grid item xs={6} md={3}>
-          <Paper sx={{ p: 2, textAlign: "center", borderRadius: 2 }}>
+          <Paper
+            sx={{
+              p: 2,
+              textAlign: "center",
+              borderRadius: 2,
+              background: "linear-gradient(135deg, #f7f0ff 0%, #e0c3fc 100%)",
+            }}
+          >
             <Typography variant="h6">Managers</Typography>
             <Typography variant="h4" sx={{ color: "#1976d2", fontWeight: 700 }}>
               {managers.length}

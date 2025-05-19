@@ -17,12 +17,24 @@ import {
   TableHead,
   TableRow,
   Typography,
+  IconButton,
+  Tooltip,
+  Paper,
+  InputAdornment,
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import AlertDialog from "../AlertDialog";
 import AddNewBike from "./AddNewBike";
 import BikeDetails from "./Bike Details";
 import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import InfoIcon from "@mui/icons-material/Info";
+import SearchIcon from "@mui/icons-material/Search";
+import DirectionsBikeIcon from "@mui/icons-material/DirectionsBike";
+import PaletteIcon from "@mui/icons-material/Palette";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import StarIcon from "@mui/icons-material/Star";
 import { useDebounce } from "../../utils";
 import { Bar } from "react-chartjs-2";
 import {
@@ -31,17 +43,18 @@ import {
   LinearScale,
   BarElement,
   Title,
-  Tooltip,
+  Tooltip as ChartTooltip,
   Legend,
 } from "chart.js";
 import { getDatasetAtEvent } from "react-chartjs-2";
+import SearchInput from "../common/SearchInput";
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
   Title,
-  Tooltip,
+  ChartTooltip,
   Legend
 );
 
@@ -79,21 +92,41 @@ const Actions = (props: any) => {
     setOpenEditDialog(true);
   };
   return (
-    <div>
-      <Button disabled={loading} color="primary" onClick={onEditClick}>
-        Edit
-      </Button>
+    <Box sx={{ display: "flex", gap: 1 }}>
+      <Tooltip title="Edit Bike">
+        <IconButton
+          disabled={loading}
+          color="primary"
+          onClick={onEditClick}
+          size="small"
+        >
+          <EditIcon />
+        </IconButton>
+      </Tooltip>
 
-      <Button disabled={loading} color="warning" onClick={onDeleteClick}>
-        Delete
-      </Button>
-      <Button disabled={loading} color="primary" onClick={onDetailsClick}>
-        Details
-      </Button>
+      <Tooltip title="Delete Bike">
+        <IconButton
+          disabled={loading}
+          color="error"
+          onClick={onDeleteClick}
+          size="small"
+        >
+          <DeleteIcon />
+        </IconButton>
+      </Tooltip>
 
-      {loading && (
-        <CircularProgress style={{ height: "25px", width: "25px" }} />
-      )}
+      <Tooltip title="View Details">
+        <IconButton
+          disabled={loading}
+          color="info"
+          onClick={onDetailsClick}
+          size="small"
+        >
+          <InfoIcon />
+        </IconButton>
+      </Tooltip>
+
+      {loading && <CircularProgress size={20} />}
       <AlertDialog
         open={openDialog}
         information={"Are you sure you want to delete this bike?"}
@@ -119,19 +152,69 @@ const Actions = (props: any) => {
           data={data}
         />
       )}
-    </div>
+    </Box>
   );
 };
-const columns: GridColDef[] = [
-  { field: "registrationId", flex: 0.8, headerName: "Registration Id" },
-  { field: "color", headerName: "Color" },
-  { field: "model", headerName: "Model" },
-  { field: "location", headerName: "Location" },
-  { field: "rating", headerName: "Rating" },
 
+const columns: GridColDef[] = [
+  {
+    field: "registrationId",
+    flex: 0.8,
+    headerName: "Registration Id",
+    renderHeader: () => (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <DirectionsBikeIcon fontSize="small" />
+        <Typography>Registration Id</Typography>
+      </Box>
+    ),
+  },
+  {
+    field: "color",
+    headerName: "Color",
+    renderHeader: () => (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <PaletteIcon fontSize="small" />
+        <Typography>Color</Typography>
+      </Box>
+    ),
+  },
+  {
+    field: "model",
+    headerName: "Model",
+    renderHeader: () => (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <DirectionsBikeIcon fontSize="small" />
+        <Typography>Model</Typography>
+      </Box>
+    ),
+  },
+  {
+    field: "location",
+    headerName: "Location",
+    renderHeader: () => (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <LocationOnIcon fontSize="small" />
+        <Typography>Location</Typography>
+      </Box>
+    ),
+  },
+  {
+    field: "rating",
+    headerName: "Rating",
+    renderHeader: () => (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <StarIcon fontSize="small" />
+        <Typography>Rating</Typography>
+      </Box>
+    ),
+  },
   {
     renderHeader: () => {
-      return <div style={{ marginLeft: 15 }}>Actions</div>;
+      return (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, ml: 2 }}>
+          <Typography>Actions</Typography>
+        </Box>
+      );
     },
     field: "action",
     sortable: false,
@@ -142,6 +225,7 @@ const columns: GridColDef[] = [
     },
   },
 ];
+
 export const Bikes = ({
   showChart = false,
   chartHeight = 260,
@@ -299,8 +383,6 @@ export const Bikes = ({
 
   return (
     <>
-      {/* Debug output for chartData and ratingRanges */}
-
       {showChart && chartData.length > 0 && (
         <Box
           sx={{
@@ -319,50 +401,104 @@ export const Bikes = ({
           <Bar ref={chartRef} data={barData} options={barOptions} />
         </Box>
       )}
-      {/* Always render the dialog for bikes with selected rating */}
       <Dialog
         open={showBikesDialog}
         onClose={() => setShowBikesDialog(false)}
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Bikes with selected rating</DialogTitle>
+        <DialogTitle>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <DirectionsBikeIcon />
+            <Typography variant="h6">Bikes with selected rating</Typography>
+          </Box>
+        </DialogTitle>
         <DialogContent>
           {selectedBikes.length === 0 ? (
             <Typography>No bikes found for this rating.</Typography>
           ) : (
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Registration Id</TableCell>
-                  <TableCell>Color</TableCell>
-                  <TableCell>Model</TableCell>
-                  <TableCell>Location</TableCell>
-                  <TableCell>Rating</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {selectedBikes.map((bike, idx) => (
-                  <TableRow key={bike.registrationId || idx}>
-                    <TableCell>{bike.registrationId}</TableCell>
-                    <TableCell>{bike.color}</TableCell>
-                    <TableCell>{bike.model}</TableCell>
-                    <TableCell>{bike.location}</TableCell>
-                    <TableCell>{bike.rating}</TableCell>
-                    <TableCell>
-                      <Button size="small" onClick={() => setBikeDetails(bike)}>
-                        Details
-                      </Button>
+            <Paper elevation={0} sx={{ mt: 2 }}>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: "primary.light" }}>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <DirectionsBikeIcon fontSize="small" />
+                        Registration Id
+                      </Box>
                     </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <PaletteIcon fontSize="small" />
+                        Color
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <DirectionsBikeIcon fontSize="small" />
+                        Model
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <LocationOnIcon fontSize="small" />
+                        Location
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <StarIcon fontSize="small" />
+                        Rating
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Actions</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHead>
+                <TableBody>
+                  {selectedBikes.map((bike, idx) => (
+                    <TableRow
+                      key={bike.registrationId || idx}
+                      sx={{
+                        "&:hover": {
+                          backgroundColor: "action.hover",
+                          cursor: "pointer",
+                        },
+                      }}
+                    >
+                      <TableCell>{bike.registrationId}</TableCell>
+                      <TableCell>{bike.color}</TableCell>
+                      <TableCell>{bike.model}</TableCell>
+                      <TableCell>{bike.location}</TableCell>
+                      <TableCell>{bike.rating}</TableCell>
+                      <TableCell>
+                        <Tooltip title="View Details">
+                          <IconButton
+                            size="small"
+                            color="primary"
+                            onClick={() => setBikeDetails(bike)}
+                          >
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Paper>
           )}
         </DialogContent>
       </Dialog>
-      {/* Always render BikeDetails dialog for a single bike */}
       {bikeDetails && (
         <BikeDetails
           onClose={() => setBikeDetails(null)}
@@ -370,7 +506,6 @@ export const Bikes = ({
           data={bikeDetails}
         />
       )}
-      {/* Only render table and add dialog if showChart is false */}
       {!showChart && (
         <>
           {openAddNewDialog && (
@@ -380,33 +515,41 @@ export const Bikes = ({
               onClose={() => setOpenAddNewDialog(false)}
             />
           )}
-          <Box style={{ margin: 5, width: "100%" }}>
-            <Box style={{ display: "flex", justifyContent: "space-between" }}>
-              <Box style={{ display: "flex", marginBottom: "10px" }}>
-                <h3>Bikes</h3>{" "}
+          <Box sx={{ m: 2, width: "100%" }}>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Typography
+                  variant="h5"
+                  sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                >
+                  <DirectionsBikeIcon />
+                  Bikes
+                </Typography>
                 <Button
-                  style={{ marginLeft: "10px" }}
-                  endIcon={<AddIcon />}
+                  variant="contained"
+                  startIcon={<AddIcon />}
                   onClick={() => setOpenAddNewDialog(true)}
+                  sx={{ ml: 2 }}
                 >
                   Add Bike
                 </Button>
               </Box>
-              <TextField
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                }}
+              <SearchInput
                 value={searchTerm}
-                id="outlined-basic"
-                label="Search Bike"
-                variant="standard"
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search bikes..."
+                sx={{ width: 300 }}
               />
             </Box>
-            <DataTable
-              data={getFilteredResults(debouncedSearchTerm)}
-              loading={loading}
-              columns={columns}
-            />{" "}
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <DataTable
+                data={getFilteredResults(debouncedSearchTerm)}
+                loading={loading}
+                columns={columns}
+              />
+            </Paper>
           </Box>
         </>
       )}

@@ -3,14 +3,33 @@ import { useAppState } from "../../appContext";
 import { db } from "../../firebase";
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { DataTable } from "../DataGrid";
-import { Box, Button, CircularProgress, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  TextField,
+  Typography,
+  IconButton,
+  Tooltip,
+  Paper,
+  InputAdornment,
+} from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import AlertDialog from "../AlertDialog";
 import AddNewUser from "./AddNewUser";
 import UserDetails from "./User Details";
 import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import InfoIcon from "@mui/icons-material/Info";
+import SearchIcon from "@mui/icons-material/Search";
+import PersonIcon from "@mui/icons-material/Person";
+import EmailIcon from "@mui/icons-material/Email";
+import CakeIcon from "@mui/icons-material/Cake";
+import BadgeIcon from "@mui/icons-material/Badge";
 import { useDebounce } from "../../utils";
 import { useUserAuth } from "../../context/UserAuthContext";
+import SearchInput from "../common/SearchInput";
 
 const Actions = (props: any) => {
   const { data } = props;
@@ -47,25 +66,41 @@ const Actions = (props: any) => {
     setOpenEditDialog(true);
   };
   return (
-    <>
-      <Button
-        disabled={loading || user.email === data.email}
-        color="warning"
-        onClick={onDeleteClick}
-      >
-        Delete
-      </Button>
-      <Button disabled={loading} color="secondary" onClick={onEditClick}>
-        Edit
-      </Button>
+    <Box sx={{ display: "flex", gap: 1 }}>
+      <Tooltip title="Delete User">
+        <IconButton
+          disabled={loading || user.email === data.email}
+          color="error"
+          onClick={onDeleteClick}
+          size="small"
+        >
+          <DeleteIcon />
+        </IconButton>
+      </Tooltip>
 
-      <Button disabled={loading} color="primary" onClick={onDetailsClick}>
-        Details
-      </Button>
+      <Tooltip title="Edit User">
+        <IconButton
+          disabled={loading}
+          color="primary"
+          onClick={onEditClick}
+          size="small"
+        >
+          <EditIcon />
+        </IconButton>
+      </Tooltip>
 
-      {loading && (
-        <CircularProgress style={{ height: "25px", width: "25px" }} />
-      )}
+      <Tooltip title="View Details">
+        <IconButton
+          disabled={loading}
+          color="info"
+          onClick={onDetailsClick}
+          size="small"
+        >
+          <InfoIcon />
+        </IconButton>
+      </Tooltip>
+
+      {loading && <CircularProgress size={20} />}
       <AlertDialog
         open={openDialog}
         information={"Are you sure you want to delete the user?"}
@@ -91,16 +126,53 @@ const Actions = (props: any) => {
           data={data}
         />
       )}
-    </>
+    </Box>
   );
 };
+
 const columns: GridColDef[] = [
-  { field: "name", flex: 1, headerName: "Name" },
-  { field: "email", flex: 1, headerName: "Email" },
-  { field: "age", flex: 0.5, headerName: "Age" },
+  {
+    field: "name",
+    flex: 1,
+    headerName: "Name",
+    renderHeader: () => (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <PersonIcon fontSize="small" />
+        <Typography>Name</Typography>
+      </Box>
+    ),
+  },
+  {
+    field: "email",
+    flex: 1,
+    headerName: "Email",
+    renderHeader: () => (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <EmailIcon fontSize="small" />
+        <Typography>Email</Typography>
+      </Box>
+    ),
+  },
+  {
+    field: "age",
+    flex: 0.5,
+    headerName: "Age",
+    renderHeader: () => (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <CakeIcon fontSize="small" />
+        <Typography>Age</Typography>
+      </Box>
+    ),
+  },
   {
     field: "role",
     headerName: "Role",
+    renderHeader: () => (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <BadgeIcon fontSize="small" />
+        <Typography>Role</Typography>
+      </Box>
+    ),
     valueGetter: (params: any) => {
       return params.row.isManager ? "Manager" : "User";
     },
@@ -108,7 +180,11 @@ const columns: GridColDef[] = [
   {
     field: "action",
     renderHeader: () => {
-      return <div style={{ marginLeft: 15 }}>Actions</div>;
+      return (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, ml: 2 }}>
+          <Typography>Actions</Typography>
+        </Box>
+      );
     },
     sortable: false,
     disableColumnMenu: true,
@@ -118,6 +194,7 @@ const columns: GridColDef[] = [
     },
   },
 ];
+
 export const Users = () => {
   const usersCollectionRef = collection(db, "users");
 
@@ -126,6 +203,7 @@ export const Users = () => {
   const [openAddNewDialog, setOpenAddNewDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
   useEffect(() => {
     const getUsers = async () => {
       const data = await getDocs(usersCollectionRef);
@@ -143,6 +221,7 @@ export const Users = () => {
 
     getUsers();
   }, []);
+
   const getFilteredResults = (debouncedSearchTerm) => {
     if (!debouncedSearchTerm || debouncedSearchTerm.length <= 0)
       return state.allUsers.filter((u: any) => !u.isDeleted);
@@ -153,6 +232,7 @@ export const Users = () => {
         u.email.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
     );
   };
+
   return (
     <>
       {openAddNewDialog && (
@@ -162,33 +242,39 @@ export const Users = () => {
           onClose={() => setOpenAddNewDialog(false)}
         />
       )}
-      <Box style={{ margin: 5, width: "100%" }}>
-        <Box style={{ display: "flex", justifyContent: "space-between" }}>
-          <Box style={{ display: "flex", marginBottom: "10px" }}>
-            <h3>Users</h3>{" "}
+      <Box sx={{ m: 2, width: "100%" }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Typography
+              variant="h5"
+              sx={{ display: "flex", alignItems: "center", gap: 1 }}
+            >
+              <PersonIcon />
+              Users
+            </Typography>
             <Button
-              style={{ marginLeft: "10px" }}
-              endIcon={<AddIcon />}
+              variant="contained"
+              startIcon={<AddIcon />}
               onClick={() => setOpenAddNewDialog(true)}
+              sx={{ ml: 2 }}
             >
               Add User
             </Button>
           </Box>
-          <TextField
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-            }}
+          <SearchInput
             value={searchTerm}
-            id="outlined-basic"
-            label="Search User"
-            variant="standard"
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search users..."
+            sx={{ width: 300 }}
           />
         </Box>
-        <DataTable
-          data={getFilteredResults(debouncedSearchTerm)}
-          loading={loading}
-          columns={columns}
-        />{" "}
+        <Paper elevation={2} sx={{ p: 2 }}>
+          <DataTable
+            data={getFilteredResults(debouncedSearchTerm)}
+            loading={loading}
+            columns={columns}
+          />
+        </Paper>
       </Box>
     </>
   );
