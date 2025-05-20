@@ -1,3 +1,52 @@
+# React Bike Rentals App
+
+A full-featured Bike Rental application built with **React** as part of a professional technical evaluation. The app simulates a real-life bike rental platform with role-based access, filtering, and reservation logic.
+
+## Features
+
+### 🚲 Bike Management
+
+- Each bike includes:
+  - Model
+  - Color
+  - Location
+  - Average Rating
+  - Availability status
+
+### 👤 Roles
+
+#### Manager
+
+- Create, Read, Update, and Delete (CRUD) bikes
+- CRUD users and other managers
+- View which users reserved which bikes and for how long
+- View all reservations made by a particular user
+
+#### User
+
+- Sign up and log in to the platform
+- View all available bikes for specific dates
+- Filter bikes by model, color, location, and rating
+- Reserve a bike for a selected period
+- Cancel existing reservations
+- Rate bikes (1 to 5 stars)
+
+## Tech Stack
+
+- **Frontend**: React
+- **Authentication & Backend**: Firebase (or compatible backend with REST API design)
+
+## Key Highlights
+
+- Real-world architecture with role-based access
+- Data-driven UI with dynamic filters and validations
+- Clean state management and modular component design
+- Responsive layout and intuitive UX prioritizing functionality over styling
+
+---
+
+> This project was completed as part of a technical evaluation and showcases my skills in building production-grade React applications with full CRUD functionality and user role management.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

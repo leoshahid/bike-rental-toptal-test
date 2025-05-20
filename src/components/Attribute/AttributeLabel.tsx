@@ -13,7 +13,10 @@ const StyledDiv = styled("div")(({ theme }) => ({
   minWidth: "120px",
   display: "block",
   wordBreak: "break-word",
-  padding: theme.breakpoints.down("sm") ? "5px 10px" : "10px",
+  padding: "10px",
+  [theme.breakpoints.down("sm")]: {
+    padding: "5px 10px",
+  },
   fontWeight: "bold",
 }));
 

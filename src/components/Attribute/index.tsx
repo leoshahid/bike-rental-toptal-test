@@ -9,7 +9,10 @@ export interface IAttributeProps {
 const StyledDiv = styled("div")(({ theme }) => ({
   display: "flex",
   padding: "4px 0px",
-  flexDirection: theme.breakpoints.down("sm") ? "column" : "row",
+  flexDirection: "row",
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+  },
 }));
 
 export const Attribute: FC<IAttributeProps> = (props) => {

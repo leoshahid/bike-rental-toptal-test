@@ -14,7 +14,11 @@ const StyledDiv = styled("div")(({ theme }) => ({
   display: "block",
   wordBreak: "break-word",
   wordWrap: "break-word",
-  padding: theme.breakpoints.down("sm") ? "5px 10px" : "10px",
+  padding: "10px",
+
+  [theme.breakpoints.down("sm")]: {
+    padding: "5px 10px",
+  },
 }));
 export const AttributeValue = (props) => {
   return (
