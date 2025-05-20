@@ -242,8 +242,17 @@ export const Users = () => {
           onClose={() => setOpenAddNewDialog(false)}
         />
       )}
-      <Box sx={{ m: 2, width: "100%" }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+      <Box sx={{ my: 2, px: { xs: 0, sm: 1 }, width: "100%" }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "column", md: "row" },
+            alignItems: { xs: "stretch", md: "center" },
+            justifyContent: "space-between",
+            mb: 3,
+            gap: 2,
+          }}
+        >
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Typography
               variant="h5"
@@ -265,16 +274,18 @@ export const Users = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search users..."
-            sx={{ width: 300 }}
+            sx={{ width: { xs: "100%", sm: "100%", md: 300 } }}
           />
         </Box>
-        <Paper elevation={2} sx={{ p: 2 }}>
-          <DataTable
-            data={getFilteredResults(debouncedSearchTerm)}
-            loading={loading}
-            columns={columns}
-          />
-        </Paper>
+        <Box sx={{ width: "100%", overflowX: "auto", px: { xs: 1, sm: 2 } }}>
+          <Paper elevation={2} sx={{ p: 2, minWidth: 700 }}>
+            <DataTable
+              data={getFilteredResults(debouncedSearchTerm)}
+              loading={loading}
+              columns={columns}
+            />
+          </Paper>
+        </Box>
       </Box>
     </>
   );

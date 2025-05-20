@@ -47,7 +47,12 @@ const Admin = () => {
 
   return (
     <Box
-      sx={{ p: { xs: 1, md: 6 }, background: "#f7fafd", minHeight: "100vh" }}
+      sx={{
+        px: { xs: 1, md: 6 },
+        py: { xs: 1, md: 6 },
+        background: "#f7fafd",
+        minHeight: "100vh",
+      }}
     >
       {/* Welcome Banner */}
       <Paper
