@@ -21,6 +21,14 @@ import {
   Tooltip,
   Paper,
   InputAdornment,
+  useTheme,
+  useMediaQuery,
+  Collapse,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  Avatar,
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import AlertDialog from "../AlertDialog";
@@ -48,6 +56,9 @@ import {
 } from "chart.js";
 import { getDatasetAtEvent } from "react-chartjs-2";
 import SearchInput from "../common/SearchInput";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import Pagination from "@mui/material/Pagination";
 
 ChartJS.register(
   CategoryScale,
@@ -226,12 +237,109 @@ const columns: GridColDef[] = [
   },
 ];
 
+const MobileBikesTable = ({
+  data,
+  pageSize = 10,
+}: {
+  data: any[];
+  pageSize?: number;
+}) => {
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
+  const pageCount = Math.ceil(data.length / pageSize);
+  const paginatedData = data.slice((page - 1) * pageSize, page * pageSize);
+  return (
+    <Paper elevation={2} sx={{ p: 0, minWidth: 0 }}>
+      <List disablePadding>
+        {paginatedData.map((bike, idx) => {
+          const globalIdx = (page - 1) * pageSize + idx;
+          const isExpanded = expandedIndex === globalIdx;
+          return (
+            <React.Fragment key={bike.registrationId}>
+              <ListItem
+                button
+                onClick={() => setExpandedIndex(isExpanded ? null : globalIdx)}
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  px: 2,
+                  py: 1,
+                  borderBottom: "1px solid #f0f0f0",
+                }}
+              >
+                {/* Avatar with bike icon */}
+                <Avatar
+                  sx={{
+                    mr: 2,
+                    bgcolor: "#1976d2",
+                    color: "white",
+                    fontWeight: 700,
+                  }}
+                >
+                  <DirectionsBikeIcon fontSize="small" />
+                </Avatar>
+                <ListItemText
+                  primary={<b>{bike.registrationId}</b>}
+                  secondary={bike.model}
+                  sx={{ flex: 1 }}
+                />
+                {isExpanded ? (
+                  <KeyboardArrowDownIcon
+                    sx={{ transition: "transform 0.2s" }}
+                  />
+                ) : (
+                  <KeyboardArrowRightIcon
+                    sx={{ transition: "transform 0.2s" }}
+                  />
+                )}
+              </ListItem>
+              <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+                <Box sx={{ px: 4, py: 1, background: "#fafbfc" }}>
+                  <Typography variant="body2">
+                    <b>Color:</b> {bike.color}
+                  </Typography>
+                  <Typography variant="body2">
+                    <b>Location:</b> {bike.location}
+                  </Typography>
+                  <Typography variant="body2">
+                    <b>Rating:</b> {bike.rating}
+                  </Typography>
+                  <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
+                    <Actions data={bike} />
+                  </Box>
+                </Box>
+              </Collapse>
+              <Divider />
+            </React.Fragment>
+          );
+        })}
+      </List>
+      {pageCount > 1 && (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 1 }}>
+          <Pagination
+            count={pageCount}
+            page={page}
+            onChange={(_, val) => {
+              setPage(val);
+              setExpandedIndex(null);
+            }}
+            size="small"
+          />
+        </Box>
+      )}
+    </Paper>
+  );
+};
+
 export const Bikes = ({
   showChart = false,
   chartHeight = 260,
+  mobilePageSize = 10,
 }: {
   showChart?: boolean;
   chartHeight?: number;
+  mobilePageSize?: number;
 }) => {
   const bikesCollectionRef = collection(db, "bikes");
   const [loading, setLoading] = useState(true);
@@ -243,6 +351,8 @@ export const Bikes = ({
   const [showBikesDialog, setShowBikesDialog] = useState(false);
   const [bikeDetails, setBikeDetails] = useState<any>(null);
   const chartRef = useRef(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     const getBikes = async () => {
@@ -550,17 +660,24 @@ export const Bikes = ({
                 sx={{ width: { xs: "100%", sm: "100%", md: 300 } }}
               />
             </Box>
-            <Box
-              sx={{ width: "100%", overflowX: "auto", px: { xs: 1, sm: 2 } }}
-            >
-              <Paper elevation={2} sx={{ p: 2, minWidth: 700 }}>
-                <DataTable
-                  data={getFilteredResults(debouncedSearchTerm)}
-                  loading={loading}
-                  columns={columns}
-                />
-              </Paper>
-            </Box>
+            {isMobile ? (
+              <MobileBikesTable
+                data={getFilteredResults(debouncedSearchTerm)}
+                pageSize={mobilePageSize}
+              />
+            ) : (
+              <Box
+                sx={{ width: "100%", overflowX: "auto", px: { xs: 1, sm: 2 } }}
+              >
+                <Paper elevation={2} sx={{ p: 2, minWidth: 700 }}>
+                  <DataTable
+                    data={getFilteredResults(debouncedSearchTerm)}
+                    loading={loading}
+                    columns={columns}
+                  />
+                </Paper>
+              </Box>
+            )}
           </Box>
         </>
       )}

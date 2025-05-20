@@ -6,11 +6,11 @@ export interface IAttributeProps {
   children: any;
 }
 
-const StyledDiv = styled("div")({
+const StyledDiv = styled("div")(({ theme }) => ({
   display: "flex",
   padding: "4px 0px",
-  flexDirection: "row",
-});
+  flexDirection: theme.breakpoints.down("sm") ? "column" : "row",
+}));
 
 export const Attribute: FC<IAttributeProps> = (props) => {
   return <StyledDiv>{props.children}</StyledDiv>;

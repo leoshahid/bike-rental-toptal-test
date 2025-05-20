@@ -163,7 +163,7 @@ const Admin = () => {
       {/* Tables Row */}
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <Users />
+          <Users mobilePageSize={5} />
         </Grid>
         <Grid item xs={12} md={6}>
           <Bikes />

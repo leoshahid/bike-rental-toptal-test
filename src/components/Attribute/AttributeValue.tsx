@@ -6,7 +6,7 @@ export interface IAttributeValueProps {
   children?: any;
 }
 
-const StyledDiv = styled("div")({
+const StyledDiv = styled("div")(({ theme }) => ({
   fontSize: "14px",
   lineHeight: 1.33,
   color: "black",
@@ -14,8 +14,8 @@ const StyledDiv = styled("div")({
   display: "block",
   wordBreak: "break-word",
   wordWrap: "break-word",
-  padding: "10px",
-});
+  padding: theme.breakpoints.down("sm") ? "5px 10px" : "10px",
+}));
 export const AttributeValue = (props) => {
   return (
     <StyledDiv>{isNilOrEmpty(props.children) ? "-" : props.children}</StyledDiv>
